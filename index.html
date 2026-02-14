@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seni Seviyorum</title>
+<title>Sevgililer Günümüz Kutlu Olsun</title>
 
 <style>
 body{
@@ -18,7 +18,33 @@ body{
     color:white;
 }
 
-/* Canvas havai fişek */
+/* Üst yazı */
+.top-text{
+    position:fixed;
+    top:20px;
+    width:100%;
+    text-align:center;
+    font-size:18px;
+    color:#ff9ec2;
+    z-index:3;
+}
+
+/* Uçan kalpler */
+.floating-heart{
+    position:fixed;
+    bottom:-20px;
+    color:#ff4d88;
+    font-size:20px;
+    animation: floatUp linear infinite;
+    opacity:.7;
+}
+
+@keyframes floatUp{
+    from{ transform:translateY(0); }
+    to{ transform:translateY(-110vh); opacity:0; }
+}
+
+/* Canvas */
 canvas{
     position:fixed;
     top:0;
@@ -26,14 +52,13 @@ canvas{
     pointer-events:none;
 }
 
-/* Kutu */
+/* Container */
 .container{
     text-align:center;
     position:relative;
     z-index:2;
 }
 
-/* Kalp alanı */
 .heart-area{
     position:relative;
     width:260px;
@@ -43,43 +68,41 @@ canvas{
 
 /* Kalp */
 .heart{
-    width:200px;
-    height:200px;
-    background: linear-gradient(135deg,#ff2d77,#ff6aa6);
     position:absolute;
-    top:30px;
-    left:30px;
+    width:180px;
+    height:180px;
+    background: linear-gradient(135deg,#ff2d77,#ff6aa6);
+    top:40px;
+    left:40px;
     transform: rotate(45deg);
     border-radius:20px;
     box-shadow:0 20px 60px rgba(255,45,119,.5);
     cursor:pointer;
-    transition:all .6s ease;
+    transition:.6s;
+    animation: beat 1.5s infinite;
+}
+
+@keyframes beat{
+    0%,100%{ transform: rotate(45deg) scale(1); }
+    50%{ transform: rotate(45deg) scale(1.05); }
 }
 
 .heart:before,
 .heart:after{
     content:"";
     position:absolute;
-    width:200px;
-    height:200px;
+    width:180px;
+    height:180px;
     background:inherit;
     border-radius:50%;
 }
 
-.heart:before{
-    top:-100px;
-    left:0;
-}
+.heart:before{ top:-90px; }
+.heart:after{ left:-90px; }
 
-.heart:after{
-    left:-100px;
-    top:0;
-}
-
-/* Küçülme */
 .heart.small{
     transform: rotate(45deg) scale(.6);
-    opacity:.6;
+    animation:none;
 }
 
 /* Mesaj */
@@ -92,19 +115,8 @@ canvas{
     align-items:center;
     opacity:0;
     transform:scale(.8);
-    transition:all .6s ease;
-    pointer-events:none;
-}
-
-.message h1{
-    margin:0;
-    font-size:30px;
-}
-
-.message p{
-    margin-top:8px;
-    font-size:18px;
-    color:rgba(255,255,255,.9);
+    transition:.6s;
+    text-align:center;
 }
 
 .message.show{
@@ -112,7 +124,12 @@ canvas{
     transform:scale(1);
 }
 
-/* Buton yazısı */
+.message h1{
+    margin:0;
+    font-size:24px;
+}
+
+/* Buton */
 .hint{
     margin-top:20px;
     padding:10px 18px;
@@ -125,6 +142,13 @@ canvas{
 
 <body>
 
+<div class="top-text">Enes'ten Rumeysa'ya ❤️</div>
+
+<!-- Müzik -->
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4e6cbd9d4f.mp3">
+</audio>
+
 <canvas id="fireworks"></canvas>
 
 <div class="container">
@@ -133,52 +157,62 @@ canvas{
         <div class="heart" id="heart"></div>
 
         <div class="message" id="message">
-            <h1>Seni Seviyorum</h1>
-            <p>Lütfen beni affet</p>
+            <h1>Sevgililer Günümüz</h1>
+            <h1>Kutlu Olsun</h1>
+            <h1>Rumeysammm ❤️</h1>
         </div>
     </div>
 
-    <div class="hint">❤️ Kalbe tıkla</div>
+    <div class="hint">Kalbe dokun</div>
 
 </div>
 
 <script>
-// Kalp tıklama
+// Uçan kalpler
+function createFloatingHeart(){
+    const heart = document.createElement("div");
+    heart.className="floating-heart";
+    heart.innerHTML="❤";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.animationDuration=(5+Math.random()*5)+"s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),10000);
+}
+setInterval(createFloatingHeart,800);
+
+// Kalp tıklama + müzik
 const heart = document.getElementById("heart");
 const message = document.getElementById("message");
+const music = document.getElementById("music");
 
-heart.addEventListener("click", function(){
+heart.addEventListener("click", ()=>{
+    music.play().catch(()=>{});
     heart.classList.add("small");
     message.classList.add("show");
     launchFireworks();
 });
 
-/* HAVAİ FİŞEK */
+/* Havai fişek */
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let particles = [];
+let particles=[];
 
 function launchFireworks(){
-    for(let i=0;i<5;i++){
-        createExplosion(
-            Math.random()*canvas.width,
-            Math.random()*canvas.height/2
-        );
+    for(let i=0;i<6;i++){
+        createExplosion(Math.random()*canvas.width, Math.random()*canvas.height/2);
     }
 }
 
 function createExplosion(x,y){
-    const colors = ["#ff2d77","#ffcc00","#00e5ff","#ffffff","#ff6aa6"];
+    const colors=["#ff2d77","#ffcc00","#00e5ff","#ffffff"];
     for(let i=0;i<60;i++){
         particles.push({
-            x:x,
-            y:y,
+            x,y,
             angle:Math.random()*Math.PI*2,
             speed:Math.random()*4+2,
-            radius:Math.random()*2+1,
             life:60,
             color:colors[Math.floor(Math.random()*colors.length)]
         });
@@ -187,31 +221,17 @@ function createExplosion(x,y){
 
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    particles.forEach((p,index)=>{
-        p.x += Math.cos(p.angle)*p.speed;
-        p.y += Math.sin(p.angle)*p.speed;
+    particles.forEach((p,i)=>{
+        p.x+=Math.cos(p.angle)*p.speed;
+        p.y+=Math.sin(p.angle)*p.speed;
         p.life--;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-
-        if(p.life <= 0){
-            particles.splice(index,1);
-        }
+        ctx.fillStyle=p.color;
+        ctx.fillRect(p.x,p.y,2,2);
+        if(p.life<=0) particles.splice(i,1);
     });
-
     requestAnimationFrame(animate);
 }
-
 animate();
-
-window.addEventListener("resize",()=>{
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
 </script>
 
 </body>
