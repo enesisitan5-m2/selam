@@ -26,92 +26,59 @@ body{
     text-align:center;
     font-size:18px;
     color:#ff9ec2;
-    z-index:3;
-}
-
-/* Uçan kalpler */
-.floating-heart{
-    position:fixed;
-    bottom:-20px;
-    color:#ff4d88;
-    font-size:20px;
-    animation: floatUp linear infinite;
-    opacity:.7;
-}
-
-@keyframes floatUp{
-    from{ transform:translateY(0); }
-    to{ transform:translateY(-110vh); opacity:0; }
-}
-
-/* Canvas */
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
-    pointer-events:none;
-}
-
-/* Container */
-.container{
-    text-align:center;
-    position:relative;
-    z-index:2;
 }
 
 /* Kalp alanı */
 .heart-area{
     position:relative;
-    width:260px;
-    height:260px;
+    width:200px;
+    height:200px;
     display:flex;
     justify-content:center;
     align-items:center;
-    margin:auto;
 }
 
-/* Kalp */
+/* EN STABİL KALP */
 .heart{
     position:relative;
-    width:160px;
-    height:160px;
-    background: linear-gradient(135deg,#ff2d77,#ff6aa6);
-    transform: rotate(45deg);
-    border-radius:20px;
-    box-shadow:0 20px 60px rgba(255,45,119,.5);
+    width:120px;
+    height:120px;
+    background:#ff2d77;
+    transform:rotate(-45deg);
+    animation:beat 1.4s infinite;
     cursor:pointer;
-    transition:.6s;
-    animation: beat 1.5s infinite;
 }
 
 .heart:before,
 .heart:after{
     content:"";
     position:absolute;
-    width:160px;
-    height:160px;
-    background:inherit;
+    width:120px;
+    height:120px;
+    background:#ff2d77;
     border-radius:50%;
 }
 
 .heart:before{
-    top:-80px;
+    top:-60px;
     left:0;
 }
 
 .heart:after{
-    left:-80px;
+    left:60px;
     top:0;
 }
 
+/* Küçülme */
 .heart.small{
-    transform: rotate(45deg) scale(.6);
+    transform:rotate(-45deg) scale(0.7);
     animation:none;
 }
 
+/* Atma */
 @keyframes beat{
-    0%,100%{ transform: rotate(45deg) scale(1); }
-    50%{ transform: rotate(45deg) scale(1.05); }
+    0%,100%{ transform:rotate(-45deg) scale(1); }
+    50%{ transform:rotate(-45deg) scale(1.08); }
 }
 
 /* Mesaj */
@@ -124,9 +91,8 @@ canvas{
     align-items:center;
     opacity:0;
     transform:scale(.8);
-    transition:.6s;
+    transition:.5s;
     text-align:center;
-    padding:10px;
 }
 
 .message.show{
@@ -136,16 +102,15 @@ canvas{
 
 .message h1{
     margin:0;
-    font-size:24px;
+    font-size:22px;
 }
 
-/* Buton */
-.hint{
-    margin-top:20px;
-    padding:10px 18px;
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,.3);
-    background:rgba(255,255,255,.08);
+/* Havai fişek */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
 }
 </style>
 </head>
@@ -154,80 +119,55 @@ canvas{
 
 <div class="top-text">Enes'ten Rumeysa'ya ❤️</div>
 
-<!-- Müzik -->
-<audio id="music" loop preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4e6cbd9d4f.mp3" type="audio/mpeg">
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4e6cbd9d4f.mp3">
 </audio>
 
 <canvas id="fireworks"></canvas>
 
-<div class="container">
+<div class="heart-area">
+    <div class="heart" id="heart"></div>
 
-    <div class="heart-area">
-        <div class="heart" id="heart"></div>
-
-        <div class="message" id="message">
-            <h1>Sevgililer Günümüz</h1>
-            <h1>Kutlu Olsun</h1>
-            <h1>Rumeysammm ❤️</h1>
-        </div>
+    <div class="message" id="message">
+        <h1>Sevgililer Günümüz</h1>
+        <h1>Kutlu Olsun</h1>
+        <h1>Rumeysammm ❤️</h1>
     </div>
-
-    <div class="hint">Kalbe dokun</div>
-
 </div>
 
 <script>
+const heart=document.getElementById("heart");
+const message=document.getElementById("message");
+const music=document.getElementById("music");
 
-/* Uçan kalpler */
-function createFloatingHeart(){
-    const heart = document.createElement("div");
-    heart.className="floating-heart";
-    heart.innerHTML="❤";
-    heart.style.left=Math.random()*100+"vw";
-    heart.style.animationDuration=(5+Math.random()*5)+"s";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),10000);
-}
-setInterval(createFloatingHeart,800);
-
-/* Kalp + Müzik */
-const heart = document.getElementById("heart");
-const message = document.getElementById("message");
-const music = document.getElementById("music");
-
-heart.addEventListener("click", function(){
-
-    // Mobil uyumlu müzik başlatma
-    music.currentTime = 0;
+heart.onclick=function(){
     music.play().catch(()=>{});
-
     heart.classList.add("small");
     message.classList.add("show");
     launchFireworks();
-});
+}
 
 /* Havai fişek */
-const canvas = document.getElementById("fireworks");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
 let particles=[];
 
 function launchFireworks(){
-    for(let i=0;i<6;i++){
-        createExplosion(Math.random()*canvas.width, Math.random()*canvas.height/2);
+    for(let i=0;i<5;i++){
+        createExplosion(Math.random()*canvas.width,Math.random()*canvas.height/2);
     }
 }
 
 function createExplosion(x,y){
-    const colors=["#ff2d77","#ffcc00","#00e5ff","#ffffff"];
-    for(let i=0;i<60;i++){
+    const colors=["#ff2d77","#ffcc00","#ffffff"];
+    for(let i=0;i<50;i++){
         particles.push({
             x,y,
             angle:Math.random()*Math.PI*2,
-            speed:Math.random()*4+2,
+            speed:Math.random()*4+1,
             life:60,
             color:colors[Math.floor(Math.random()*colors.length)]
         });
@@ -247,7 +187,6 @@ function animate(){
     requestAnimationFrame(animate);
 }
 animate();
-
 </script>
 
 </body>
