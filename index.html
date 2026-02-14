@@ -59,21 +59,23 @@ canvas{
     z-index:2;
 }
 
+/* Kalp alanı */
 .heart-area{
     position:relative;
     width:260px;
     height:260px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     margin:auto;
 }
 
 /* Kalp */
 .heart{
-    position:absolute;
-    width:180px;
-    height:180px;
+    position:relative;
+    width:160px;
+    height:160px;
     background: linear-gradient(135deg,#ff2d77,#ff6aa6);
-    top:40px;
-    left:40px;
     transform: rotate(45deg);
     border-radius:20px;
     box-shadow:0 20px 60px rgba(255,45,119,.5);
@@ -82,27 +84,34 @@ canvas{
     animation: beat 1.5s infinite;
 }
 
-@keyframes beat{
-    0%,100%{ transform: rotate(45deg) scale(1); }
-    50%{ transform: rotate(45deg) scale(1.05); }
-}
-
 .heart:before,
 .heart:after{
     content:"";
     position:absolute;
-    width:180px;
-    height:180px;
+    width:160px;
+    height:160px;
     background:inherit;
     border-radius:50%;
 }
 
-.heart:before{ top:-90px; }
-.heart:after{ left:-90px; }
+.heart:before{
+    top:-80px;
+    left:0;
+}
+
+.heart:after{
+    left:-80px;
+    top:0;
+}
 
 .heart.small{
     transform: rotate(45deg) scale(.6);
     animation:none;
+}
+
+@keyframes beat{
+    0%,100%{ transform: rotate(45deg) scale(1); }
+    50%{ transform: rotate(45deg) scale(1.05); }
 }
 
 /* Mesaj */
@@ -117,6 +126,7 @@ canvas{
     transform:scale(.8);
     transition:.6s;
     text-align:center;
+    padding:10px;
 }
 
 .message.show{
@@ -145,8 +155,8 @@ canvas{
 <div class="top-text">Enes'ten Rumeysa'ya ❤️</div>
 
 <!-- Müzik -->
-<audio id="music" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4e6cbd9d4f.mp3">
+<audio id="music" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4e6cbd9d4f.mp3" type="audio/mpeg">
 </audio>
 
 <canvas id="fireworks"></canvas>
@@ -168,7 +178,8 @@ canvas{
 </div>
 
 <script>
-// Uçan kalpler
+
+/* Uçan kalpler */
 function createFloatingHeart(){
     const heart = document.createElement("div");
     heart.className="floating-heart";
@@ -180,13 +191,17 @@ function createFloatingHeart(){
 }
 setInterval(createFloatingHeart,800);
 
-// Kalp tıklama + müzik
+/* Kalp + Müzik */
 const heart = document.getElementById("heart");
 const message = document.getElementById("message");
 const music = document.getElementById("music");
 
-heart.addEventListener("click", ()=>{
+heart.addEventListener("click", function(){
+
+    // Mobil uyumlu müzik başlatma
+    music.currentTime = 0;
     music.play().catch(()=>{});
+
     heart.classList.add("small");
     message.classList.add("show");
     launchFireworks();
@@ -232,6 +247,7 @@ function animate(){
     requestAnimationFrame(animate);
 }
 animate();
+
 </script>
 
 </body>
