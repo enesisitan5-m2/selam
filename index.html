@@ -12,8 +12,8 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family: Arial, sans-serif;
     background: radial-gradient(circle at center,#1a0b2e,#0b1020);
+    font-family: Arial, sans-serif;
     overflow:hidden;
     color:white;
 }
@@ -29,56 +29,26 @@ body{
 }
 
 /* Kalp alanı */
-.heart-area{
+.container{
     position:relative;
-    width:200px;
-    height:200px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    text-align:center;
 }
 
-/* EN STABİL KALP */
+/* SVG kalp */
 .heart{
-    position:relative;
-    width:120px;
-    height:120px;
-    background:#ff2d77;
-    transform:rotate(-45deg);
-    animation:beat 1.4s infinite;
+    width:160px;
     cursor:pointer;
+    animation: beat 1.4s infinite;
 }
 
-.heart:before,
-.heart:after{
-    content:"";
-    position:absolute;
-    width:120px;
-    height:120px;
-    background:#ff2d77;
-    border-radius:50%;
-}
-
-.heart:before{
-    top:-60px;
-    left:0;
-}
-
-.heart:after{
-    left:60px;
-    top:0;
-}
-
-/* Küçülme */
-.heart.small{
-    transform:rotate(-45deg) scale(0.7);
-    animation:none;
-}
-
-/* Atma */
 @keyframes beat{
-    0%,100%{ transform:rotate(-45deg) scale(1); }
-    50%{ transform:rotate(-45deg) scale(1.08); }
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.08); }
+}
+
+.heart.small{
+    animation:none;
+    transform:scale(0.7);
 }
 
 /* Mesaj */
@@ -92,7 +62,6 @@ body{
     opacity:0;
     transform:scale(.8);
     transition:.5s;
-    text-align:center;
 }
 
 .message.show{
@@ -125,14 +94,22 @@ canvas{
 
 <canvas id="fireworks"></canvas>
 
-<div class="heart-area">
-    <div class="heart" id="heart"></div>
+<div class="container">
+
+    <!-- SVG KALP -->
+    <svg class="heart" id="heart" viewBox="0 0 32 29.6">
+        <path fill="#ff2d77"
+        d="M23.6,0c-3.4,0-6.3,2.1-7.6,5.1C14.7,2.1,11.8,0,8.4,0
+        C3.8,0,0,3.8,0,8.4c0,9.4,16,21.2,16,21.2s16-11.8,16-21.2
+        C32,3.8,28.2,0,23.6,0z"/>
+    </svg>
 
     <div class="message" id="message">
         <h1>Sevgililer Günümüz</h1>
         <h1>Kutlu Olsun</h1>
         <h1>Rumeysammm ❤️</h1>
     </div>
+
 </div>
 
 <script>
